@@ -3,29 +3,28 @@ import logging
 import os
 
 """
-A class for managing database configuration. Provides a singleton pattern and a method to 
+A class for managing database configuration. Provides a singleton pattern and a method to
 load the configuration from a file.
 
 Attributes:
     DB_CONNECTION_STRING (str): Default SQLite in-memory database connection string.
-    __instances (dict[str, Config]): A dictionary storing instances of this class keyed by 
+    __instances (dict[str, Config]): A dictionary storing instances of this class keyed by
                                      their associated file names.
 
 Methods:
-    __init__(self, file_name: str = ""): Initializes a new instance with an optional file 
+    __init__(self, file_name: str = ""): Initializes a new instance with an optional file
                                          name for loading the configuration.
     _load(self, filename: str) -> None: Loads the database connection string from a JSON file.
     connection_string(self) -> str: Returns the current database connection string.
-    get_instance(cls, file_name: str = "") -> Config: Retrieves an instance of this class 
-                                              associated with the given file name, creating a 
+    get_instance(cls, file_name: str = "") -> Config: Retrieves an instance of this class
+                                              associated with the given file name, creating a
                                               new one if it doesn't exist yet.
 """
 
 
 class Config:
-
     DB_CONNECTION_STRING: str = "sqlite:///:memory:"
-    __instances: dict[str, Config] = {}
+    __instances: dict[str, "Config"] = {}
 
     KEY_CONNECTION_STRING: str = "connection_string"
     KEY_LOG_LEVEL: str = "log_level"
@@ -75,7 +74,7 @@ class Config:
         return self._log_level
 
     @classmethod
-    def get_instance(cls, file_name: str = "") -> Config:
+    def get_instance(cls, file_name: str = "") -> "Config":
         """
         Returns an instance of the Config class with the given file name. If no file name is provided,
         it will use the default connection string. If an instance already exists for the provided file
