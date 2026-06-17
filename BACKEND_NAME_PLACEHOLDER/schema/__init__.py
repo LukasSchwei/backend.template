@@ -1,6 +1,7 @@
 from ._entity import EntityBase, EntityFilter, EntityFull
+from ._person import PersonBase, PersonFilter, PersonFull
 from ._token import LoginRequest, Token, TokenData
-from ._user import UserBase, UserCreate, UserFilter, UserFull, UserPublic
+from ._user import UserBase, UserFilter, UserFull
 
 __all__ = [
     "EntityBase",
@@ -14,4 +15,7 @@ __all__ = [
     "UserFilter",
     "UserFull",
     "UserPublic",
+    "PersonBase",
+    "PersonFull",
+    "PersonFilter",
 ]

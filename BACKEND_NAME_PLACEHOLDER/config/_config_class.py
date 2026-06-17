@@ -5,29 +5,29 @@ import logging
 import os
 
 """
-A class for managing application configuration.
+A class for managing database configuration. Provides a singleton pattern and a method to 
+load the configuration from a file.
 
-Provides a singleton pattern and loads settings from a JSON config file and/or
-environment variables. Precedence: environment variable > config file > default.
+Attributes:
+    DB_CONNECTION_STRING (str): Default SQLite in-memory database connection string.
+    __instances (dict[str, Config]): A dictionary storing instances of this class keyed by 
+                                     their associated file names.
 
-Settings:
-    connection_string : database connection string
-    log_level         : logging level (name, e.g. "DEBUG")
-    admin_user        : name of the initial root/admin user
-    admin_password    : password of the initial root/admin user
-    secret_key        : secret used to sign JWTs
-
-Environment variables:
-    CONNECTION_STRING, LOG_LEVEL, ADMIN_USER, ADMIN_PASSWORD, SECRET_KEY
-Config file location can be set via the CONFIG_FILE environment variable.
+Methods:
+    __init__(self, file_name: str = ""): Initializes a new instance with an optional file 
+                                         name for loading the configuration.
+    _load(self, filename: str) -> None: Loads the database connection string from a JSON file.
+    connection_string(self) -> str: Returns the current database connection string.
+    get_instance(cls, file_name: str = "") -> Config: Retrieves an instance of this class 
+                                              associated with the given file name, creating a 
+                                              new one if it doesn't exist yet.
 """
 
 
 class Config:
-
     DB_CONNECTION_STRING: str = "sqlite:///:memory:"
     DEFAULT_ADMIN_USER: str = "admin"
-    __instances: dict[str, Config] = {}
+    __instances: dict[str, "Config"] = {}
 
     KEY_CONNECTION_STRING: str = "connection_string"
     KEY_LOG_LEVEL: str = "log_level"
@@ -118,7 +118,7 @@ class Config:
         return self._secret_key
 
     @classmethod
-    def get_instance(cls, file_name: str = "") -> Config:
+    def get_instance(cls, file_name: str = "") -> "Config":
         """
         Returns the Config instance for the given file name (singleton).
         If no file name is given, the CONFIG_FILE environment variable is used.
