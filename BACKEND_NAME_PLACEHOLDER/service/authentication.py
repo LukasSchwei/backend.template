@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 import bcrypt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
 from ..config import Config, get_logger
@@ -14,7 +14,7 @@ log = get_logger()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+bearer_scheme = HTTPBearer()
 
 
 def _get_secret_key() -> str:
@@ -99,12 +99,15 @@ class Auth:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(err))
 
     # --- FastAPI dependency ---
-    def get_current_user(self, token: str = Depends(oauth2_scheme)) -> UserFull:
+    def get_current_user(
+        self, credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)
+    ) -> UserFull:
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+        token = credentials.credentials
         try:
             payload = jwt.decode(token, _get_secret_key(), algorithms=[ALGORITHM])
             user_name = payload.get("sub")
